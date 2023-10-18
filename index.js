@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express')
 const cors = require('cors')
 const app = express()
@@ -28,18 +28,49 @@ async function run() {
 
     const database = client.db("brandsDB");
     const brandCollection = database.collection("brand");
+    const productCollection = client.db("productsDB").collection("products");
 
-    app.get('/brands', async(req, res) => {
-        const cursor = brandCollection.find();
-        const result = await cursor.toArray();
-        res.send(result);
+   
+
+    app.get('/brands', async (req, res) => {
+      const cursor = brandCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
     })
 
-    app.post('/brands', async(req, res) =>{
-        const brands = req.body;
-        console.log(brands)
-        const result = await brandCollection.insertOne(brands);
-        res.send(result);
+    app.get('/products', async (req, res) => {
+      const cursor = productCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
+
+
+    // get api for products
+    app.get('/products/:brandName', async (req, res) => {
+      const brandName = req.params.brandName;
+      console.log(`Searching for products with brand: ${brandName}`);
+      const result = await productCollection.find({ brand: brandName }).toArray();
+      console.log(`Found ${result.length} products.`);
+      // const cursor = productCollection.find();
+      // const result = await cursor.toArray();
+      res.send(result);
+    })
+
+
+    // post api for brand
+    app.post('/brands', async (req, res) => {
+      const brands = req.body;
+      console.log(brands)
+      const result = await brandCollection.insertOne(brands);
+      res.send(result);
+    })
+    // post api for products
+    app.post('/products', async (req, res) => {
+      const products = req.body;
+      console.log(products)
+      const result = await productCollection.insertOne(products);
+      res.send(result);
     })
 
 
