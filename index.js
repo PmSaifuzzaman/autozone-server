@@ -29,6 +29,7 @@ async function run() {
     const database = client.db("brandsDB");
     const brandCollection = database.collection("brand");
     const productCollection = client.db("productsDB").collection("products");
+    const cartProductCollection = client.db("productsDB").collection("cartProducts");
 
 
 
@@ -43,17 +44,32 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     })
+    // For Cart 
+    app.get('/cartProducts', async (req, res) => {
+      const cursor = cartProductCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
 
 
 
     // get api for products
     app.get('/products/:brandName', async (req, res) => {
       const brandName = req.params.brandName;
-      console.log(`Searching for products with brand: ${brandName}`);
+      // console.log(`Searching for products with brand: ${brandName}`);
       const result = await productCollection.find({ brand: brandName }).toArray();
-      console.log(`Found ${result.length} products.`);
+      // console.log(`Found ${result.length} products.`);
       // const cursor = productCollection.find();
       // const result = await cursor.toArray();
+      res.send(result);
+    })
+
+    // get api for cartProducts
+    app.get('/cartProducts/:userEmail', async(req, res) => {
+      const userEmail = req.params.userEmail;
+      console.log(`Searching for products with userEmail: ${userEmail}`);
+      const result = await cartProductCollection.find({ useremail: userEmail }).toArray();
+      console.log(`Found ${userEmail.length} products.`);
       res.send(result);
     })
 
@@ -77,6 +93,13 @@ async function run() {
       const products = req.body;
       console.log(products)
       const result = await productCollection.insertOne(products);
+      res.send(result);
+    })
+
+    // post api for cartProduct
+    app.post('/cartProducts' , async (req, res) => {
+      const cartProducts = req.body;
+      const result = await cartProductCollection.insertOne(cartProducts);
       res.send(result);
     })
 
