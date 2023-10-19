@@ -30,7 +30,7 @@ async function run() {
     const brandCollection = database.collection("brand");
     const productCollection = client.db("productsDB").collection("products");
 
-   
+
 
     app.get('/brands', async (req, res) => {
       const cursor = brandCollection.find();
@@ -57,6 +57,13 @@ async function run() {
       res.send(result);
     })
 
+    // Get specifiq product by id for update
+    app.get('/product/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await productCollection.findOne(query);
+      res.send(result);
+    })
 
     // post api for brand
     app.post('/brands', async (req, res) => {
@@ -71,6 +78,27 @@ async function run() {
       console.log(products)
       const result = await productCollection.insertOne(products);
       res.send(result);
+    })
+
+    // Update value 
+    app.put('/product/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedProduct = req.body;
+      const newUpdatedProduct = {
+        $set: {
+          name: updatedProduct.name,
+          brand: updatedProduct.brand,
+          type: updatedProduct.type,
+          price: updatedProduct.price,
+          ratings: updatedProduct.ratings,
+          details: updatedProduct.details,
+          photo: updatedProduct.photo
+        }
+      }
+      const result = await productCollection.updateOne(filter, newUpdatedProduct, options)
+      res.send(result)
     })
 
 
