@@ -50,8 +50,8 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     })
-
-
+    
+    
 
     // get api for products
     app.get('/products/:brandName', async (req, res) => {
@@ -63,7 +63,7 @@ async function run() {
       // const result = await cursor.toArray();
       res.send(result);
     })
-
+    
     // get api for cartProducts
     app.get('/cartProducts/:userEmail', async(req, res) => {
       const userEmail = req.params.userEmail;
@@ -72,7 +72,7 @@ async function run() {
       console.log(`Found ${userEmail.length} products.`);
       res.send(result);
     })
-
+    
     // Get specifiq product by id for update
     app.get('/product/:id', async (req, res) => {
       const id = req.params.id;
@@ -80,7 +80,7 @@ async function run() {
       const result = await productCollection.findOne(query);
       res.send(result);
     })
-
+    
     // post api for brand
     app.post('/brands', async (req, res) => {
       const brands = req.body;
@@ -103,6 +103,15 @@ async function run() {
       res.send(result);
     })
 
+
+    // Delete specifiq cart product
+    app.delete("/cartProduct/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await cartProductCollection.deleteOne(query)
+      res.send(result);
+      });
+
     // Update value 
     app.put('/product/:id', async (req, res) => {
       const id = req.params.id;
@@ -123,7 +132,6 @@ async function run() {
       const result = await productCollection.updateOne(filter, newUpdatedProduct, options)
       res.send(result)
     })
-
 
 
     // Send a ping to confirm a successful connection
